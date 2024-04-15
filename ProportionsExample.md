@@ -1,8 +1,8 @@
 Estimating confidence intervals for likert style questions?
 ================
 
-An exploration of approaches to confidence intervals. [Version with
-wilson conf intervals](#sec-wilson)
+An exploration of approaches to confidence intervals. For
+recommendation, see Version with wilson conf intervals, below.
 
 In a survey we received 11 responses from 100 requests.
 
@@ -14,8 +14,8 @@ the responses in the sample are normally distributed. Thus the likely
 error from sampling depends on the standard deviation of the metric in
 the population. The approach assumes that the sample standard deviation
 approximates the population standard deviation. I am a little uncertain
-about doing this across the 1..5 range of the questions but see [Version
-with wilson conf intervals](#sec-wilson)
+about doing this across the 1..5 range of the questions but see Version
+with wilson conf intervals, below.
 
 ``` r
 library(tidyverse)

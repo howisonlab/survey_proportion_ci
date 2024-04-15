@@ -3,11 +3,11 @@ title: "Estimating confidence intervals for likert style questions?"
 output: github_document
 ---
 
-An exploration of approaches to confidence intervals. [Version with wilson conf intervals]
+An exploration of approaches to confidence intervals. For recommendation, see Version with wilson conf intervals, below.
 
 In a survey we received 11 responses from 100 requests.
 
-Some of the questions were likert scale answers (a 1-5 scale). We want to produce estimates of the confidence interval for values in the population. To do this we use the approach laid out here: <https://online.stat.psu.edu/stat100/lesson/9/9.1> where we assume that the responses in the sample are normally distributed. Thus the likely error from sampling depends on the standard deviation of the metric in the population. The approach assumes that the sample standard deviation approximates the population standard deviation. I am a little uncertain about doing this across the 1..5 range of the questions but see [Version with wilson conf intervals]
+Some of the questions were likert scale answers (a 1-5 scale). We want to produce estimates of the confidence interval for values in the population. To do this we use the approach laid out here: <https://online.stat.psu.edu/stat100/lesson/9/9.1> where we assume that the responses in the sample are normally distributed. Thus the likely error from sampling depends on the standard deviation of the metric in the population. The approach assumes that the sample standard deviation approximates the population standard deviation. I am a little uncertain about doing this across the 1..5 range of the questions but see Version with wilson conf intervals, below.
 
 ```{r, results = 'hide', message=FALSE}
 library(tidyverse)
