@@ -3,9 +3,11 @@ title: "Estimating confidence intervals for likert style questions?"
 output: github_document
 ---
 
+An exploration of approaches to confidence intervals. [Version with wilson conf intervals]
+
 In a survey we received 11 responses from 100 requests.
 
-Some of the questions were likert scale answers (a 1-5 scale).  We want to produce estimates of the confidence interval for values in the population. To do this we use the approach laid out here: <https://online.stat.psu.edu/stat100/lesson/9/9.1> where we assume that the responses in the sample are normally distributed. Thus the likely error from sampling depends on the standard deviation of the metric in the population. The approach assumes that the sample standard deviation approximates the population standard deviation.  I am a little uncertain about doing this across the 1..5 range of the questions.
+Some of the questions were likert scale answers (a 1-5 scale). We want to produce estimates of the confidence interval for values in the population. To do this we use the approach laid out here: <https://online.stat.psu.edu/stat100/lesson/9/9.1> where we assume that the responses in the sample are normally distributed. Thus the likely error from sampling depends on the standard deviation of the metric in the population. The approach assumes that the sample standard deviation approximates the population standard deviation. I am a little uncertain about doing this across the 1..5 range of the questions but see [Version with wilson conf intervals]
 
 ```{r, results = 'hide', message=FALSE}
 library(tidyverse)
@@ -82,9 +84,11 @@ with_conf_vals %>%
   facet_wrap(vars(question))
 ```
 
+# Version with wilson conf intervals {#sec-wilson}
+
 With input from Mick McQuaid, and this Reddit thread:
 
-https://www.reddit.com/r/statistics/comments/10191m1/q_confidence_interval_for_likert_scale_data/
+<https://www.reddit.com/r/statistics/comments/10191m1/q_confidence_interval_for_likert_scale_data/>
 
 lead to this paper:
 
@@ -92,21 +96,21 @@ Agresti, A., & Coull, B. A. (2024). Approximate Is Better than “Exact” for I
 
 And then to this code:
 
-https://rpruim.github.io/fastR2/reference/wilson.ci.html
+<https://rpruim.github.io/fastR2/reference/wilson.ci.html>
 
-```{r}
+```{r, results = 'hide', message=FALSE}
 library(fastR2)
 wilson.ci(8,11) %>% pluck(1)
 
 ```
 
 ```{r}
+# wilson.ci returns negative values, not relevant for percentages.
 wilson_ci_with_zero_floor <- function(...) {
   result = wilson.ci(...)
   return(if_else(result < 0, 0, result))
 }
 ```
-
 
 ```{r}
 
@@ -132,5 +136,3 @@ with_conf_vals %>%
   geom_label(aes(y=conf_high, label = scales::percent(conf_high, accuracy = 1)), nudge_y=+0.05) + 
   facet_wrap(vars(question))
 ```
-
-
