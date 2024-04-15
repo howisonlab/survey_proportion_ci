@@ -63,7 +63,7 @@ Now we can use the `prop.test` function to get high and low confidence values.
 
 with_conf_vals <- response_proportions %>% 
   # run the prop.test on each row, store the result
-  mutate(prop_results = map2(response_count, total_responses_for_question, prop.test, conf.level = .5)) %>% 
+  mutate(prop_results = map2(response_count, total_responses_for_question, prop.test, conf.level = .95)) %>% 
   # get the low/high results conf.int is a [low, high] list
   mutate(conf_low = map_dbl(prop_results, pluck, "conf.int", 1), 
          conf_high = map_dbl(prop_results, pluck, "conf.int", 2)) %>% 
@@ -81,3 +81,56 @@ with_conf_vals %>%
   geom_errorbar() +
   facet_wrap(vars(question))
 ```
+
+With input from Mick McQuaid, and this Reddit thread:
+
+https://www.reddit.com/r/statistics/comments/10191m1/q_confidence_interval_for_likert_scale_data/
+
+lead to this paper:
+
+Agresti, A., & Coull, B. A. (2024). Approximate Is Better than “Exact” for Interval Estimation of Binomial Proportions.
+
+And then to this code:
+
+https://rpruim.github.io/fastR2/reference/wilson.ci.html
+
+```{r}
+library(fastR2)
+wilson.ci(8,11) %>% pluck(1)
+
+```
+
+```{r}
+wilson_ci_with_zero_floor <- function(...) {
+  result = wilson.ci(...)
+  return(if_else(result < 0, 0, result))
+}
+```
+
+
+```{r}
+
+with_conf_vals <- response_proportions %>% 
+  # run the prop.test on each row, store the result
+  mutate(prop_results = map2(response_count, total_responses_for_question, wilson_ci_with_zero_floor, conf.level = .95)) %>% 
+  # get the low/high results conf.int is a [low, high] list
+  mutate(conf_low = map_dbl(prop_results, pluck, 1), 
+         conf_high = map_dbl(prop_results, pluck, 2)) %>% 
+  select(-prop_results)
+
+kable(with_conf_vals)
+
+```
+
+```{r}
+with_conf_vals %>% 
+  # pivot_longer(cols = c(-question,-answer)) %>% 
+  ggplot(aes(x = answer, y = proportion_with_answer, ymin = conf_low, ymax = conf_high)) +
+  geom_bar(stat="identity") +
+  geom_errorbar() +
+  geom_label(aes(y=conf_low, label = scales::percent(conf_low, accuracy = 1)), nudge_y=-0.05) + 
+  geom_label(aes(y=conf_high, label = scales::percent(conf_high, accuracy = 1)), nudge_y=+0.05) + 
+  facet_wrap(vars(question))
+```
+
+
